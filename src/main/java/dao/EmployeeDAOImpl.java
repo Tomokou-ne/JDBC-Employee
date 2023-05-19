@@ -1,5 +1,6 @@
 package dao;
 
+import model.City;
 import model.Employee;
 
 import java.sql.Connection;
@@ -17,12 +18,12 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     @Override
     public void create(Employee employee) {
         try (PreparedStatement statement = connection.prepareStatement
-                ("INSERT INTO employee (first_name,last_name, gender , age,city_id) VALUES ((?), (?), (?), (?),(?))")) {
+                ("INSERT INTO employee (first_name,last_name, gender , age, city_id) VALUES ((?), (?), (?), (?),(?))")) {
             statement.setString(1, employee.getFirstName());
             statement.setString(2, employee.getLastName());
             statement.setString(3, employee.getGender());
             statement.setInt(4, employee.getAge());
-            statement.setInt(5, employee.getId());
+            statement.setInt(5, employee.getCity().getCityId());
             statement.executeUpdate();
         }catch (SQLException e) {
             e.printStackTrace();
@@ -41,10 +42,12 @@ public class EmployeeDAOImpl implements EmployeeDAO {
                 employee.setLastName(resultSet.getString("last_name"));
                 employee.setGender(resultSet.getString("gender"));
                 employee.setAge(resultSet.getInt("age"));
+                employee.setCity(new City(resultSet.getInt("city_id"),
+                        resultSet.getString("city_name")));
             }
         } catch (SQLException ignored) {
         }
-        return null;
+        return employee;
     }
 
     @Override
@@ -59,7 +62,9 @@ public class EmployeeDAOImpl implements EmployeeDAO {
                 String lastName = resultSet.getString("last_name");
                 String gender = resultSet.getString("gender");
                 int age = resultSet.getInt("age");
-                employees.add((new Employee(id, firstName, lastName, gender, age)));
+                City city = new City(resultSet.getInt("city_id"),
+                        resultSet.getString("city_name"));
+                employees.add((new Employee(id, firstName, lastName, gender, age, city)));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -70,12 +75,13 @@ public class EmployeeDAOImpl implements EmployeeDAO {
     @Override
     public void updateById(int id, Employee employee) {
         try (PreparedStatement statement = connection.prepareStatement(
-                "UPDATE employee SET (first_name = (?), last_name = (?) , gender = (?) , age = (?)) WHERE id=(?)")) {
+                "UPDATE employee SET (first_name = (?), last_name = (?) , gender = (?) , age = (?), city_id = (?)) WHERE id=(?)")) {
             statement.setString(1, employee.getFirstName());
             statement.setString(2, employee.getLastName());
             statement.setString(3, employee.getGender());
             statement.setInt(4, employee.getAge());
             statement.setInt(5, id);
+            statement.setInt(6, employee.getCity().getCityId());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
