@@ -13,7 +13,7 @@ public class Application {
         final String password = "1234";
         final String url = "jdbc:postgresql://localhost:5432/skypro";
 
-        try (final Connection connection = DriverManager.getConnection(url, user, password);
+        /*try (final Connection connection = DriverManager.getConnection(url, user, password);
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM employee WHERE id = (?)")) {
             statement.setInt(1, 6);
             final ResultSet resultSet = statement.executeQuery();
@@ -30,7 +30,7 @@ public class Application {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }
+        }*/
 
         try (Connection connection = DriverManager.getConnection(url, user, password)) {
 
