@@ -1,4 +1,11 @@
+import dao.EmployeeDAO;
+import dao.EmployeeDAOImpl;
+import model.City;
+import model.Employee;
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Application {
     public static void main(String[] args) {
@@ -21,6 +28,25 @@ public class Application {
                 System.out.println(gender);
                 System.out.println(age);
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        try (Connection connection = DriverManager.getConnection(url, user, password)) {
+
+            EmployeeDAO employeeDAO = new EmployeeDAOImpl(connection);
+
+            City city = new City(1, "L.N.Tolstoy");
+            Employee employee1 = new Employee("Peter", "Kravchenko", "male", 68, city);
+
+            employeeDAO.create(employee1);
+
+            List<Employee> list = new ArrayList<>(employeeDAO.getAllEmployees());
+
+            for (Employee employee : list) {
+                System.out.println(employee);
+            }
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
